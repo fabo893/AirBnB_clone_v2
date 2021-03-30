@@ -1,0 +1,79 @@
+#!/usr/bin/pyhton3
+"""
+Handles the storage when the engine depends on a MySQL database
+"""
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from os import getenv
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
+
+
+class DBStorage:
+    """
+    Database based storage system
+    """
+    __engine = None
+    __session = None
+
+    def __init__(self):
+        """
+        Constructor for DBStorage
+        """
+        user = getenv('HBNB_MYSQL_USER')
+        passwd = getenv('HBNB_MYSQL_PWD')
+        host = getenv('HBNB_MYSQL_HOST')
+        db = getenv('HBNB_MYSQL_DB')
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
+                                      .format(user, passwd, host, db),
+                                      pool_pre_ping=True)
+        Base.metadata.create_all(engine)
+        if getenv('HBNB_ENV') == 'test':
+            Base.metadata.drop_all()
+
+    def all(self, cls=None):
+        """
+        Queries all object of the same class specified,
+        or all object if the class is not specified
+        """
+
+        objects = self.__session.query(User, State, City, Amenity,
+                                            Place, Review)
+        aDict = {}
+        for obj in objects:
+            aDict[str(type(obj)) + '.' + obj.id] = obj
+        return aDict
+
+    def new(self, obj):
+        """
+        Adds the object tp the current database session
+        """
+        if obj is not None:
+            DBStorage.__session.add(obj)
+
+    def save(self):
+        """
+        Commits the changes in the current database session
+        """
+        self.__session.commit()
+
+    def delete(self, obj=None):
+        """
+        Deletes objects from the current database session
+        """
+
+        if obj is not None:
+            self.__session.delete(obj)
+
+    def reload(self):
+        """
+        Creates the current database session from the engine
+        """
+        self.__session = sessionmaker(bind=engine)()
+
+
+
