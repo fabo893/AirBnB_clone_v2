@@ -3,13 +3,26 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 from models import City
+from os import getenv
 
 
 class State(BaseModel, Base):
-    """ State class """
+    """
+    Class States
+    """
     __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
-    cities = relationship('City', backref='state',
-                          cascade='all, delete, delete-orphan')
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        name = Column(String(128), nullable=False)
+        cities = relationship('City', backref='state',
+                              cascade='all, delete, delete-orphan')
+    else:
+        from models import storage
+
+        @property
+        def cities(self):
+            st_cities = []
+            for city in storage.all(City):
+                if (self.id == city.state_id):
+                    st_cities.append(city)
+            return st_cities
