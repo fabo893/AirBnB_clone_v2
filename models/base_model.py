@@ -38,8 +38,10 @@ class BaseModel:
         storage.new(self)
         storage.save()
 
-    """NOT FINISH"""
     def delete(self):
+        """Delete the current instance from the storage"""
+        from models import storage
+        storage.delete(self)
 
 
     def to_dict(self):
