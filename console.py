@@ -30,6 +30,36 @@ class HBNBCommand(cmd.Cmd):
              'latitude': float, 'longitude': float
             }
 
+    def do_create(self, args):
+        """ Create an object of any class"""
+        if not args:
+            print("** class name missing **")
+            return
+        args = args.split(" ")
+        if args[0] not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
+        cls = HBNBCommand.classes[args[0]]
+        kwargs = {}
+        params = args[1:]
+        for param in params:
+            k, v = param.split('=')
+            if v is '':
+                continue
+            if v[0] == '"' and v[len(v)-1] == '"':
+                v = v.strip('"')
+                v = v.replace('_', ' ')
+                v = v.replace('"', '\"')
+            else:
+                try:
+                    v = eval(v)
+                except:
+                    continue
+            kwargs[k] = v
+        new_instance = cls(**kwargs)
+        new_instance.save()
+        print(new_instance.id)
+
     def preloop(self):
         """Prints if isatty is false"""
         if not sys.__stdin__.isatty():
@@ -113,27 +143,6 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
-        """ Create an object of any class"""
-        args = args.split(" ")
-        if not args[0]:
-            print("** class name missing **")
-            return
-        elif args[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args[0]]()
-        new_instance.save()
-        # storage.save()
-        print(new_instance.id)
-        cls_id = args[0] + " " + new_instance.id
-        for param in args[1:]:
-            k, v = param.split('=')
-            v = v.replace('_', ' ')
-            upd_arg = cls_id + " {} {}".format(k, v)
-            self.do_update(upd_arg)
-        # storage.save()
-
     def help_create(self):
         """ Help information for the create method """
         print("Creates a class of any type")
@@ -214,11 +223,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print("[{}]".format(", ".join(print_list)))
