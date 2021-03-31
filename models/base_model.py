@@ -48,7 +48,6 @@ class BaseModel:
         """Delete the current instance from the storage"""
         storage.delete(self)
 
-
     def to_dict(self):
         """Convert instance into dict format"""
         dictionary = {}
