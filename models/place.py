@@ -8,7 +8,7 @@ from os import getenv
 
 
 class Place(BaseModel, Base):
-    """ 
+    """
     A place to stay and be happy during the weekend
     """
     __tablename__ = 'places'
