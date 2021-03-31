@@ -3,7 +3,7 @@
 Handles the storage when the engine depends on a MySQL database
 """
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
 from models.base_model import Base
 from models.user import User
@@ -79,6 +79,6 @@ class DBStorage:
         Creates the current database session from the engine
         """
         Base.metadata.create_all(self.__engine)
-        session = sessionmaker(bind=engine, expire_on_commit=False)
-        self.__session = scoped_session(session)
+        ses_factory = sessionmaker(bind=engine, expire_on_commit=False)
+        self.__session = scoped_session(ses_factory)
 
