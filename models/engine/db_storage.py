@@ -58,7 +58,7 @@ class DBStorage:
 
     def new(self, obj):
         """
-        Adds the object tp the current database session
+        Adds the object to the current database session
         """
         if obj is not None:
             self.__session.add(obj)
