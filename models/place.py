@@ -8,7 +8,9 @@ from os import getenv
 
 
 class Place(BaseModel, Base):
-    """ A place to stay """
+    """ 
+    A place to stay and be happy during the weekend
+    """
     __tablename__ = 'places'
     city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
     user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
