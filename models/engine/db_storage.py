@@ -43,19 +43,14 @@ class DBStorage:
         """
 
         aDict = {}
+        objects = None
         if cls:
-            """
-            Validate that cls have an existing class
-            """
             objects = self.__session.query(cls)
-
-            for obj in objects:
-                aDict[str(type(obj)) + '.' + obj.id] = obj
         else:
             objects = self.__session.query(User, State, City, Amenity,
                                             Place, Review)
-            for obj in objects:
-                aDict[str(type(obj)) + '.' + obj.id] = obj
+        for obj in objects:
+            aDict[type(obj).__name__ + '.' + obj.id] = obj
 
         return aDict
 
@@ -76,7 +71,6 @@ class DBStorage:
         """
         Deletes objects from the current database session
         """
-
         if obj is not None:
             self.__session.delete(obj)
 
