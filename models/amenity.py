@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String
 
 
-class Amenity(BaseModel):
+class Amenity(BaseModel, Base):
     """
     Amenities that a place might have
     """
-    name = ""
+    __tablename__ = 'amenities'
+    name = Column(String(128), nullable=False)
