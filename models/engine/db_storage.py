@@ -5,6 +5,7 @@ Handles the storage when the engine depends on a MySQL database
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from os import getenv
+from models.base_model import Base
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -31,9 +32,9 @@ class DBStorage:
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
                                       .format(user, passwd, host, db),
                                       pool_pre_ping=True)
-        Base.metadata.create_all(engine)
+
         if getenv('HBNB_ENV') == 'test':
-            Base.metadata.drop_all()
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """
@@ -41,11 +42,21 @@ class DBStorage:
         or all object if the class is not specified
         """
 
-        objects = self.__session.query(User, State, City, Amenity,
-                                            Place, Review)
         aDict = {}
-        for obj in objects:
-            aDict[str(type(obj)) + '.' + obj.id] = obj
+        if cls:
+            """
+            Validate that cls have an existing class
+            """
+            objects = self.__session.query(cls)
+
+            for obj in objects:
+                aDict[str(type(obj)) + '.' + obj.id] = obj
+        else:
+            objects = self.__session.query(User, State, City, Amenity,
+                                            Place, Review)
+            for obj in objects:
+                aDict[str(type(obj)) + '.' + obj.id] = obj
+
         return aDict
 
     def new(self, obj):
@@ -53,7 +64,7 @@ class DBStorage:
         Adds the object tp the current database session
         """
         if obj is not None:
-            DBStorage.__session.add(obj)
+            self.__session.add(obj)
 
     def save(self):
         """
@@ -73,7 +84,7 @@ class DBStorage:
         """
         Creates the current database session from the engine
         """
-        self.__session = sessionmaker(bind=engine)()
-
-
+        Base.metadata.create_all(self.__engine)
+        session = sessionmaker(bind=engine, expire_on_commit=False)
+        self.__session = scoped_session(session)
 
