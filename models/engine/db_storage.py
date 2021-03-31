@@ -21,6 +21,9 @@ class DBStorage:
     __engine = None
     __session = None
 
+    classes = {"User": User, "Place": Place, "State": State, "City": City,
+               "Amenity": Amenity, "Review": Review}
+
     def __init__(self):
         """
         Constructor for DBStorage
@@ -43,15 +46,14 @@ class DBStorage:
         """
 
         aDict = {}
-        objects = None
+        objects = []
         if cls:
             objects = self.__session.query(cls)
         else:
-            objects = self.__session.query(User, State, City, Amenity,
-                                            Place, Review)
+            for cls in self.classes.values():
+                objects += self.__session.query(cls).all()
         for obj in objects:
             aDict[type(obj).__name__ + '.' + obj.id] = obj
-
         return aDict
 
     def new(self, obj):
