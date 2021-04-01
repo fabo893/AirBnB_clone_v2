@@ -7,8 +7,12 @@ from models.city import City
 from os import getenv
 
 
-
-place_amenity = Table("place_amenity", Base.metadata, Column("place_id", String(60), ForeignKey("places.id"), primary_key=True, nullable=False), Column("amenity_id", String(60), ForeignKey("amenities.id"), primary_key=True, nullalbe=True))
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id", String(60), ForeignKey("places.id"),
+                             primary_key=True, nullable=False),
+                      Column("amenity_id", String(60),
+                             ForeignKey("amenities.id"),
+                             primary_key=True, nullalbe=True))
 
 
 class Place(BaseModel, Base):
@@ -31,6 +35,10 @@ class Place(BaseModel, Base):
     if getenv("HBNB_TYPE_STORAGE") == "db":
         reviews = relationship("Review", backref='place',
                                cascade='all, delete, delete-orphan')
+
+        amenities = relationship("Amenity", secondary=place_amenity,
+                                 viewonly=False,
+                                 back_populates="place_amenities")
     else:
         @property
         def reviews(self):
@@ -43,3 +51,11 @@ class Place(BaseModel, Base):
                 if cls == "Review" and v.place_.id == self.id:
                     revw.append(v)
             return (revw)
+
+        @property
+        def amenities(self):
+            """ Amenities Getter """
+            return self.amenity_ids
+
+        @amenities.setter
+        def amenities
