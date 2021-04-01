@@ -6,8 +6,8 @@ from sqlalchemy.orm import relationship
 from models.city import City
 from os import getenv
 
-
-place_amenity = Table("place_amenity", Base.metadata,
+if getenv("HBNB_TYPE_STORAGE") == "db":
+    place_amenity = Table("place_amenity", Base.metadata,
                       Column("place_id", String(60), ForeignKey("places.id"),
                              primary_key=True, nullable=False),
                       Column("amenity_id", String(60),
@@ -43,7 +43,7 @@ class Place(BaseModel, Base):
         @property
         def reviews(self):
             """
-            Retrives the reviews associted with a Place
+            Retrieves the reviews associated with a Place
             """
             revw = []
             for k, v in models.storage.all().items():
