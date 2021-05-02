@@ -16,6 +16,7 @@ def hello():
     """ Hello method """
     return "Hello HBNB!"
 
+
 @app.route('/hbnb')
 def hello123():
     """ Second hello method """
