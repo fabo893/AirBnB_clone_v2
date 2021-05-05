@@ -19,6 +19,7 @@ class State(BaseModel, Base):
         cities = relationship('City', backref='state',
                               cascade='all, delete, delete-orphan')
     else:
+        name = ""
 
         @property
         def cities(self):
@@ -26,7 +27,7 @@ class State(BaseModel, Base):
             Getter for cities related to a state using a FIlEStorage engine
             """
             st_cities = []
-            for city in models.storage.all(City):
+            for key, city in models.storage.all(City).items():
                 if (self.id == city.state_id):
                     st_cities.append(city)
             return st_cities
