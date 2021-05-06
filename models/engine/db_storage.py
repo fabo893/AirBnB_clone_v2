@@ -1,4 +1,4 @@
-#!/usr/bin/pyhton3
+#!/usr/bin/python3
 """
 Handles the storage when the engine depends on a MySQL database
 """

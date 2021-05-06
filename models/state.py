@@ -27,7 +27,7 @@ class State(BaseModel, Base):
             Getter for cities related to a state using a FIlEStorage engine
             """
             st_cities = []
-            for key, city in models.storage.all(City).items():
+            for city in models.storage.all(City).values():
                 if (self.id == city.state_id):
                     st_cities.append(city)
             return st_cities
